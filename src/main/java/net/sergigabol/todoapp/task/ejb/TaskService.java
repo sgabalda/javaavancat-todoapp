@@ -26,7 +26,7 @@ import net.sergigabol.todoapp.task.Tasca;
 public interface TaskService {
     
     @GET
-    public List<Tasca> getTasca(@PathParam("userid") long userid);
+    public List<Tasca> getTasques(@PathParam("userid") long userid);
     
     @GET
     @Path("/{tascaid}")

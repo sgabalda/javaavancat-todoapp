@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import net.sergigabol.todoapp.task.Tasca;
+import net.sergigabol.todoapp.task.persistence.TascaDao;
 
 /**
  *
@@ -21,42 +22,35 @@ import net.sergigabol.todoapp.task.Tasca;
  */
 @Stateless
 public class TaskServiceEjb implements TaskService{
+    
+    @Inject
+    private TascaDao tascaDao;
 
     private static final Logger LOG = Logger.getLogger(TaskServiceEjb.class.getName());
     
     @Override
     public Tasca getTasca(long tascaid, long userid) {
-        Tasca t = new Tasca();
-        t.setTascaid(tascaid);;
-        t.setAcabada(Boolean.FALSE);
-        t.setUserid(userid);
-        t.setDescripcio("Una tasca qualsevol");
+        Tasca t = tascaDao.getTasca(tascaid);
+        //TODO comprovar que es de l'usuari
         return t;
     }
 
     @Override
-    public List<Tasca> getTasca(long userid) {
-        List<Tasca> result = new ArrayList<>();
-        for(int i=0; i<10; i++){
-            Tasca t = new Tasca();
-            t.setTascaid((long)i);;
-            t.setAcabada(Boolean.FALSE);
-            t.setUserid(userid);
-            t.setDescripcio("Una tasca qualsevol "+i);
-            result.add(t);
-        }
-        
+    public List<Tasca> getTasques(long userid) {
+        List<Tasca> result = tascaDao.getTasquesUsuari(userid);
         return result;
     }
 
     @Override
     public void novaTasca(Tasca t) {
-        LOG.log(Level.INFO, "Should save a Tasca {0}", t);
+        LOG.log(Level.INFO, "Going to save a Tasca {0}", t);
+        tascaDao.creaTasca(t);
     }
 
     @Override
     public void eliminaTasca(long tascaid) {
-        LOG.log(Level.INFO, "Should delete a Tasca {0}", tascaid);
+        LOG.log(Level.INFO, "Going to delete a Tasca {0}", tascaid);
+        tascaDao.eliminaTasca(tascaid);
     }
     
     
