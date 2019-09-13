@@ -14,6 +14,7 @@ import net.sergigabol.todoapp.user.User;
  */
 public interface UserDao {
     public User getUserById(long id);
+    public User getUserByUsername(String username);
     public List<User> getAllUsers();
     public void deleteUser(long id);
     public void createUser(User user);

@@ -35,7 +35,7 @@ public interface TaskService {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public void novaTasca(Tasca t);
+    public Tasca novaTasca(Tasca t);
     
     @DELETE
     @Path("/{tascaid}")

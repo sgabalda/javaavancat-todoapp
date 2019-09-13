@@ -31,6 +31,7 @@ public class JDBCUserDao implements UserDao{
     private static final Logger LOG = Logger.getLogger(JDBCUserDao.class.getName());
 
     public static final String SELECT_ID="SELECT * FROM USERS_TODO WHERE userid = ?";
+    public static final String SELECT_USERNAME="SELECT * FROM USERS_TODO WHERE USERNAME = ?";
     public static final String SELECT_ALL="SELECT * FROM USERS_TODO";
     public static final String INSERT="INSERT INTO USERS_TODO ("
             + "USERNAME,PASSWORD,ADMINUSER)"
@@ -56,6 +57,27 @@ public class JDBCUserDao implements UserDao{
         } catch (SQLException ex) {
             throw new UserStorageException(id,"SELECT_ID",
                     "Getting user by id "+id, ex);
+        }
+    }
+    
+    @Override
+    public User getUserByUsername(String username) {
+        try(Connection con=dataSource.getConnection();
+                PreparedStatement ps1=con.prepareStatement(SELECT_USERNAME)){
+            ps1.setString(1, username);
+            
+            ResultSet rs = ps1.executeQuery();
+            
+            if(rs.next()){
+                User result = getUserFromResultSet(rs);
+                return result;
+            }
+            return null;
+        } catch (SQLException ex) {
+            User us = new User();
+            us.setUsername(username);
+            throw new UserStorageException(us,"SELECT_USERNAME",
+                    "Getting user by username "+username, ex);
         }
     }
 

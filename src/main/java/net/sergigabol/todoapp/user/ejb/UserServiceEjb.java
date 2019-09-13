@@ -8,6 +8,9 @@ package net.sergigabol.todoapp.user.ejb;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -28,6 +31,8 @@ import net.sergigabol.todoapp.user.persistence.UserDao;
  *  EJB que ja defineix directament la propia interfíce, REST en aquest cas.
  * @author gabalca
  */
+@DeclareRoles({"User","Admin"})
+@RolesAllowed("User")
 @Stateless
 @Path("/usuaris")
 public class UserServiceEjb {
@@ -47,6 +52,8 @@ public class UserServiceEjb {
      * Per al segon exercici, canvio el tipus de retorn. No és obligatori, però
      * per a ser més estrictes amb REST, podem tornar codis i així ho heu vist 
      * per quan fem JAX-RS
+     * 
+     * TODO: que els usuaris no admin no pguin veure un altre usuari que no sigui ell.
      * @param userid
      * @return 
      */
@@ -70,6 +77,7 @@ public class UserServiceEjb {
      * @return 
      */
     @GET
+    @RolesAllowed("Admin")
     public List<User> getAllUsers(){
         List<User> result = userDao.getAllUsers();
         return result;
@@ -78,19 +86,26 @@ public class UserServiceEjb {
     /**
      * Afegeix un nou usuari
      * @param us 
+     * @return  l'usuari creat
+     * 
+     * TODO: que els usuaris no Admin no puguin crear un usuari admin
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
     //encara no hem vist a fons JAX-RS, però podem posar com a paràmetre 
             //d'entrada un POJO, i si s'envia un JSON amb camps correctes, 
             //ens ho converteix automàticament.
-    public void createUser(User us){
+    public User createUser(User us){
         LOG.log(Level.INFO, "Going to save user {0}", us);
         userDao.createUser(us);
+        return us;
     }
     
     @DELETE
     @Path("{userid}")
+    @RolesAllowed("Admin")
     public void removeUser(@PathParam("userid") long userid){
         LOG.log(Level.INFO, "Going to delete user {0}", userid);
         //delete all tasks for this user
